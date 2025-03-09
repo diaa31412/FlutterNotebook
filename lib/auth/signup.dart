@@ -1,3 +1,4 @@
+import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterfirebase/components/custombuttonauth.dart';
@@ -87,15 +88,37 @@ class _SignUpState extends State<SignUp> {
                         email: email.text,
                         password: password.text,
                       );
+                  FirebaseAuth.instance.currentUser!.sendEmailVerification();
                   Navigator.of(context).pushReplacementNamed('homepage');
                 } on FirebaseAuthException catch (e) {
                   if (e.code == 'weak-password') {
                     print('The password provided is too weak.');
+                    AwesomeDialog(
+                      context: context,
+                      dialogType: DialogType.error,
+                      animType: AnimType.rightSlide,
+                      title: 'Error Title',
+                      desc: 'The password provided is too weak.',
+                    ).show();
                   } else if (e.code == 'email-already-in-use') {
                     print('The account already exists for that email.');
+                    AwesomeDialog(
+                      context: context,
+                      dialogType: DialogType.error,
+                      animType: AnimType.rightSlide,
+                      title: 'Error Title',
+                      desc: 'The account already exists for that email.',
+                    ).show();
                   }
                 } catch (e) {
                   print(e);
+                  AwesomeDialog(
+                    context: context,
+                    dialogType: DialogType.error,
+                    animType: AnimType.rightSlide,
+                    title: 'Error Title',
+                    desc: e.toString(),
+                  ).show();
                 }
               },
             ),
