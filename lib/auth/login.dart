@@ -84,11 +84,47 @@ class _LogInState extends State<LogIn> {
                     myController: password,
                   ),
                   Container(height: 10),
-                  Container(
-                    alignment: Alignment.topRight,
-                    child: Text(
-                      "Forget Password?",
-                      style: TextStyle(fontSize: 14),
+                  InkWell(
+                    onTap: () async {
+                      if (email.text == "") {
+                        AwesomeDialog(
+                          context: context,
+                          dialogType: DialogType.error,
+                          animType: AnimType.rightSlide,
+                          title: 'Error',
+                          desc: 'Please Enter Your Email',
+                        ).show();
+                        return;
+                      }
+                      try {
+                        await FirebaseAuth.instance.sendPasswordResetEmail(
+                          email: email.text,
+                        );
+                        AwesomeDialog(
+                          context: context,
+                          dialogType: DialogType.success,
+                          animType: AnimType.rightSlide,
+                          title: 'Info Title',
+                          desc:
+                              'Please got to your email to recieve the reset email',
+                        ).show();
+                      } catch (e) {
+                        print(e);
+                        AwesomeDialog(
+                          context: context,
+                          dialogType: DialogType.error,
+                          animType: AnimType.rightSlide,
+                          title: 'Info Title',
+                          desc: 'Please Enter Correct email and try again',
+                        ).show();
+                      }
+                    },
+                    child: Container(
+                      alignment: Alignment.topRight,
+                      child: Text(
+                        "Forget Password?",
+                        style: TextStyle(fontSize: 14),
+                      ),
                     ),
                   ),
                 ],
