@@ -1,3 +1,4 @@
+import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -12,11 +13,13 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   List<QueryDocumentSnapshot> data = [];
+  bool isLoading = true;
 
   getData() async {
     QuerySnapshot querySnpashot =
         await FirebaseFirestore.instance.collection('categories').get();
     data.addAll(querySnpashot.docs);
+    isLoading = false;
     setState(() {});
   }
 
@@ -53,26 +56,50 @@ class _HomePageState extends State<HomePage> {
           ),
         ],
       ),
-      body: GridView.builder(
-        itemCount: data.length,
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
-          mainAxisExtent: 200,
-        ),
-        itemBuilder: (context, i) {
-          return Card(
-            child: Container(
-              padding: EdgeInsets.all(15),
-              child: Column(
-                children: [
-                  Image.asset('images/folder.png', height: 130),
-                  Text("${data[i]['name']}"),
-                ],
+      body:
+          isLoading
+              ? Center(child: CircularProgressIndicator())
+              : GridView.builder(
+                itemCount: data.length,
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  mainAxisExtent: 200,
+                ),
+                itemBuilder: (context, i) {
+                  return InkWell(
+                    onLongPress: () {
+                      AwesomeDialog(
+                        context: context,
+                        dialogType: DialogType.warning,
+                        animType: AnimType.rightSlide,
+                        title: 'Delete',
+                        desc: 'Are you sure you want delete this category',
+                        btnCancelOnPress: () {},
+                        btnOkOnPress: () async {
+                          await FirebaseFirestore.instance
+                              .collection('categories')
+                              .doc(data[i].id)
+                              .delete();
+                          Navigator.of(
+                            context,
+                          ).pushReplacementNamed('homepage');
+                        },
+                      ).show();
+                    },
+                    child: Card(
+                      child: Container(
+                        padding: EdgeInsets.all(15),
+                        child: Column(
+                          children: [
+                            Image.asset('images/folder.png', height: 130),
+                            Text("${data[i]['name']}"),
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+                },
               ),
-            ),
-          );
-        },
-      ),
     );
   }
 }
