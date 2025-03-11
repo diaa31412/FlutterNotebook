@@ -3,6 +3,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterfirebase/auth/login.dart';
 import 'package:flutterfirebase/auth/signup.dart';
+import 'package:flutterfirebase/category/add.dart';
 import 'package:flutterfirebase/homepage.dart';
 
 void main() async {
@@ -35,6 +36,17 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      theme: ThemeData(
+        appBarTheme: AppBarTheme(
+          backgroundColor: Colors.grey[50],
+          titleTextStyle: TextStyle(
+            color: Colors.orange,
+            fontSize: 17,
+            fontWeight: FontWeight.bold,
+          ),
+          iconTheme: IconThemeData(color: Colors.orange),
+        ),
+      ),
       home:
           (FirebaseAuth.instance.currentUser == null &&
                   FirebaseAuth.instance.currentUser!.emailVerified)
@@ -44,6 +56,7 @@ class _MyAppState extends State<MyApp> {
         'signup': (context) => SignUp(),
         'login': (context) => LogIn(),
         'homepage': (context) => HomePage(),
+        'addcategory': (context) => AddCategory(),
       },
     );
   }

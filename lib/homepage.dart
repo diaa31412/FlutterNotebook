@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -10,9 +11,32 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  List<QueryDocumentSnapshot> data = [];
+
+  getData() async {
+    QuerySnapshot querySnpashot =
+        await FirebaseFirestore.instance.collection('categories').get();
+    data.addAll(querySnpashot.docs);
+    setState(() {});
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    getData();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: Colors.orange,
+        onPressed: () {
+          Navigator.of(context).pushNamed('addcategory');
+        },
+        child: Icon(Icons.add),
+      ),
       appBar: AppBar(
         title: Text('Firebase install'),
         actions: [
@@ -29,19 +53,25 @@ class _HomePageState extends State<HomePage> {
           ),
         ],
       ),
-      body: ListView(
-        children: [
-          FirebaseAuth.instance.currentUser!.emailVerified
-              ? Text("Welcome")
-              : MaterialButton(
-                textColor: Colors.white,
-                color: Colors.blue,
-                onPressed: () {
-                  FirebaseAuth.instance.currentUser!.sendEmailVerification();
-                },
-                child: Text('Please Verified Your account'),
+      body: GridView.builder(
+        itemCount: data.length,
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2,
+          mainAxisExtent: 200,
+        ),
+        itemBuilder: (context, i) {
+          return Card(
+            child: Container(
+              padding: EdgeInsets.all(15),
+              child: Column(
+                children: [
+                  Image.asset('images/folder.png', height: 130),
+                  Text("${data[i]['name']}"),
+                ],
               ),
-        ],
+            ),
+          );
+        },
       ),
     );
   }
