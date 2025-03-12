@@ -2,6 +2,7 @@ import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutterfirebase/category/edit.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 class HomePage extends StatefulWidget {
@@ -76,9 +77,10 @@ class _HomePageState extends State<HomePage> {
                         dialogType: DialogType.warning,
                         animType: AnimType.rightSlide,
                         title: 'Delete',
-                        desc: 'Are you sure you want delete this category',
-                        btnCancelOnPress: () {},
-                        btnOkOnPress: () async {
+                        desc: 'Choose What do you want',
+                        btnCancelText: "Delete",
+                        btnOkText: "Update",
+                        btnCancelOnPress: () async {
                           await FirebaseFirestore.instance
                               .collection('categories')
                               .doc(data[i].id)
@@ -86,6 +88,17 @@ class _HomePageState extends State<HomePage> {
                           Navigator.of(
                             context,
                           ).pushReplacementNamed('homepage');
+                        },
+                        btnOkOnPress: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder:
+                                  (context) => EditCategory(
+                                    docid: data[i].id,
+                                    oldName: data[i]['name'],
+                                  ),
+                            ),
+                          );
                         },
                       ).show();
                     },

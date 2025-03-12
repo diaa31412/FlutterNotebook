@@ -5,14 +5,16 @@ import 'package:flutterfirebase/components/custombuttonauth.dart';
 import 'package:flutterfirebase/components/customformadd.dart';
 import 'package:flutterfirebase/components/textformfield.dart';
 
-class AddCategory extends StatefulWidget {
-  const AddCategory({super.key});
+class EditCategory extends StatefulWidget {
+  final String docid;
+  final String oldName;
+  const EditCategory({super.key, required this.docid, required this.oldName});
 
   @override
-  State<AddCategory> createState() => _AddCategoryState();
+  State<EditCategory> createState() => _EditCategoryState();
 }
 
-class _AddCategoryState extends State<AddCategory> {
+class _EditCategoryState extends State<EditCategory> {
   GlobalKey<FormState> formState = GlobalKey<FormState>();
   TextEditingController name = TextEditingController();
   bool isLoading = false;
@@ -22,16 +24,13 @@ class _AddCategoryState extends State<AddCategory> {
     'categories',
   );
 
-  addCategory() async {
+  editCategory() async {
     // Call the user's CollectionReference to add a new user
     if (formState.currentState!.validate()) {
       try {
         isLoading = true;
         setState(() {});
-        DocumentReference response = await categories.add({
-          "name": name.text,
-          "id": FirebaseAuth.instance.currentUser!.uid,
-        });
+        await categories.doc(widget.docid).update({"name": name.text});
         isLoading = false;
         setState(() {});
         Navigator.of(
@@ -43,6 +42,13 @@ class _AddCategoryState extends State<AddCategory> {
         print("Error $e");
       }
     }
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    name.text = widget.oldName;
+    super.initState();
   }
 
   @override
@@ -72,9 +78,9 @@ class _AddCategoryState extends State<AddCategory> {
                       ),
                     ),
                     CustomButtonAuth(
-                      title: 'Add',
+                      title: 'Save',
                       onPressed: () {
-                        addCategory();
+                        editCategory();
                       },
                     ),
                   ],
