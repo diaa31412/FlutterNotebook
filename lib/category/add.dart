@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterfirebase/components/custombuttonauth.dart';
 import 'package:flutterfirebase/components/customformadd.dart';
@@ -24,7 +25,10 @@ class _AddCategoryState extends State<AddCategory> {
     // Call the user's CollectionReference to add a new user
     if (formState.currentState!.validate()) {
       try {
-        DocumentReference response = await categories.add({"name": name.text});
+        DocumentReference response = await categories.add({
+          "name": name.text,
+          "id": FirebaseAuth.instance.currentUser!.uid,
+        });
         Navigator.of(context).pushReplacementNamed("homepage");
       } catch (e) {
         print("Error $e");
