@@ -45,6 +45,13 @@ class _EditCategoryState extends State<EditCategory> {
   }
 
   @override
+  void dispose() {
+    // TODO: implement dispose
+    name.dispose();
+    super.dispose();
+  }
+
+  @override
   void initState() {
     // TODO: implement initState
     name.text = widget.oldName;

@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterfirebase/category/edit.dart';
+import 'package:flutterfirebase/note/view.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 class HomePage extends StatefulWidget {
@@ -71,6 +72,14 @@ class _HomePageState extends State<HomePage> {
                 ),
                 itemBuilder: (context, i) {
                   return InkWell(
+                    onTap: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder:
+                              (context) => NoteView(categoryId: data[i].id),
+                        ),
+                      );
+                    },
                     onLongPress: () {
                       AwesomeDialog(
                         context: context,
@@ -109,6 +118,8 @@ class _HomePageState extends State<HomePage> {
                           children: [
                             Image.asset('images/folder.png', height: 130),
                             Text("${data[i]['name']}"),
+
+                            // Text("${data[i]['id']}"),
                           ],
                         ),
                       ),

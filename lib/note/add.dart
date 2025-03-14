@@ -4,40 +4,40 @@ import 'package:flutter/material.dart';
 import 'package:flutterfirebase/components/custombuttonauth.dart';
 import 'package:flutterfirebase/components/customformadd.dart';
 import 'package:flutterfirebase/components/textformfield.dart';
+import 'package:flutterfirebase/note/view.dart';
 
-class AddCategory extends StatefulWidget {
-  const AddCategory({super.key});
+class AddNote extends StatefulWidget {
+  final String categoryId;
+  const AddNote({super.key, required this.categoryId});
 
   @override
-  State<AddCategory> createState() => _AddCategoryState();
+  State<AddNote> createState() => _AddNoteState();
 }
 
-class _AddCategoryState extends State<AddCategory> {
+class _AddNoteState extends State<AddNote> {
   GlobalKey<FormState> formState = GlobalKey<FormState>();
-  TextEditingController name = TextEditingController();
+  TextEditingController note = TextEditingController();
   bool isLoading = false;
 
-  // Create a CollectionReference called users that references the firestore collection
-  CollectionReference categories = FirebaseFirestore.instance.collection(
-    'categories',
-  );
-
-  addCategory() async {
+  addNote() async {
+    // Create a CollectionReference called users that references the firestore collection
+    CollectionReference notes = FirebaseFirestore.instance
+        .collection('categories')
+        .doc(widget.categoryId)
+        .collection('note');
     // Call the user's CollectionReference to add a new user
     if (formState.currentState!.validate()) {
       try {
         isLoading = true;
         setState(() {});
-        DocumentReference response = await categories.add({
-          "name": name.text,
-          "id": FirebaseAuth.instance.currentUser!.uid,
-        });
-
+        DocumentReference response = await notes.add({"name": note.text});
         isLoading = false;
         setState(() {});
-        Navigator.of(
-          context,
-        ).pushNamedAndRemoveUntil("homepage", (route) => false);
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => NoteView(categoryId: widget.categoryId),
+          ),
+        );
       } catch (e) {
         isLoading = false;
         setState(() {});
@@ -49,14 +49,14 @@ class _AddCategoryState extends State<AddCategory> {
   @override
   void dispose() {
     // TODO: implement dispose
-    name.dispose();
+    note.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Add Category')),
+      appBar: AppBar(title: Text('Add Note')),
       body: Form(
         key: formState,
         child:
@@ -70,8 +70,8 @@ class _AddCategoryState extends State<AddCategory> {
                         horizontal: 25,
                       ),
                       child: CustomFormAdd(
-                        hinttext: 'Enter Name',
-                        myController: name,
+                        hinttext: 'Enter Your Note',
+                        myController: note,
                         valdiator: (val) {
                           if (val == "") {
                             return "Can't be empty";
@@ -82,7 +82,7 @@ class _AddCategoryState extends State<AddCategory> {
                     CustomButtonAuth(
                       title: 'Add',
                       onPressed: () {
-                        addCategory();
+                        addNote();
                       },
                     ),
                   ],
